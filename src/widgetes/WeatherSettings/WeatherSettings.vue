@@ -60,22 +60,18 @@ const dragover = (e: DragEvent) => {
     );
     const c = el?.getAttribute("city");
 
-    if (c) {
+    if (c !== selectedCity.value) {
       const idxCurrent = props.cities.findIndex((item) => item === c);
       const idxSelected = props.cities.findIndex(
         (item) => item === selectedCity.value
       );
-      if (
-        idxCurrent !== -1 &&
-        idxSelected !== -1 &&
-        idxCurrent !== idxSelected
-      ) {
+      if (idxCurrent !== -1 && idxSelected !== -1) {
         props.swapCities(idxCurrent, idxSelected);
       }
     }
   }
 };
-const drop = (e: DragEvent) => {
+const drop = () => {
   selected.value = null;
   selectedCity.value = null;
 };

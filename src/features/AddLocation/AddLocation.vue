@@ -7,6 +7,7 @@
         :value="city"
         :status="isError ? 'error' : ''"
         @change="changeHandler"
+        @keyup.enter="addCityWrapper"
       />
       <a-button type="primary" :loading="isLoading" @click="addCityWrapper"
         >Save</a-button
