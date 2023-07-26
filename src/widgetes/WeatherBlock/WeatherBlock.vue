@@ -2,12 +2,12 @@
   <div class="grid">
     <a-row align="middle">
       <a-col :span="props.showGear ? 12 : 24">
-        <a-typography-title :level="3">{{
-          props.info.name
-        }}</a-typography-title>
+        <a-typography-title :level="3">
+          {{ props.info.name }}
+        </a-typography-title>
       </a-col>
       <a-col align="right" v-if="props.showGear" :span="12">
-        <setting-outlined :class="'gear'" />
+        <setting-outlined :class="'gear'" @click="openSettings" />
       </a-col>
     </a-row>
 
@@ -18,9 +18,9 @@
         />
       </a-col>
       <a-col :span="12">
-        <a-typography-text :class="'temp'"
-          >{{ props.info.temp }}°C</a-typography-text
-        >
+        <a-typography-text :class="'temp'">
+          {{ props.info.temp }}°C
+        </a-typography-text>
       </a-col>
     </a-row>
 
@@ -59,13 +59,14 @@
 <script setup lang="ts">
 import DescriptionItem from "@/features/DescriptionItem/DescriptionItem.vue";
 import { IWeatherInfo } from "@/shared/types";
-import { WeatherBlockTypes } from "./types/index";
+import { WeatherBlockTypes } from "./types";
 import { SettingOutlined } from "@ant-design/icons-vue";
 
 const props = defineProps<{
-  showGear?: boolean;
   info: IWeatherInfo;
   type: WeatherBlockTypes;
+  showGear?: boolean;
+  openSettings?: () => void;
 }>();
 </script>
 <style lang="scss" scoped>

@@ -26,3 +26,8 @@ export interface IWeatherResponce {
   name: string;
   cod: number;
 }
+
+export interface IWeatherResponceError {
+  cod: number;
+  message: string;
+}
