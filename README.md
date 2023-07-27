@@ -13,7 +13,10 @@ $ npm run build
 
 ```html
 <weather-widget />
-<script type="text/javascript" src="{URL to the app.js}"></script>
+<script
+  type="text/javascript"
+  src="https://cdn.jsdelivr.net/gh/IlfatKar/VUEweatherWidgetPreview/app.js"
+></script>
 ```
 
 ## Preview
