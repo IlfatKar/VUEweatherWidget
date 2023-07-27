@@ -1,5 +1,9 @@
 <template>
   <loading3-quarters-outlined v-if="loading" :spin="true" class="loadingIcon" />
+  <a-typography-title :level="3" v-else-if="citiesList.length === 0">
+    Weather fetching error. <br />
+    Try again later.
+  </a-typography-title>
   <a-layout class="mainLayout" v-else>
     <a-space direction="vertical">
       <div v-for="(item, index) in citiesList" :key="item[0]">
@@ -41,17 +45,23 @@ import {
   fetchWeather,
   fetchWeatherByLocation,
 } from "../../shared/api/fetchWeather";
+
 import WeatherBlock from "../../widgetes/WeatherBlock/WeatherBlock.vue";
 import WeatherSettings from "../../widgetes/WeatherSettings/WeatherSettings.vue";
-import { ICitiesInfo } from "./types";
 import { WeatherBlockTypes } from "@/widgetes/WeatherBlock/types";
-import { parseWeatherResponce, swapArrayElements } from "./helpers/index";
-import { notification } from "ant-design-vue";
+
+import { ICitiesInfo, WeatherWrapperArgs } from "./types";
 import {
-  IWeatherResponceError,
-  IWeatherResponce,
-} from "../../shared/api/types/index";
+  parseWeatherResponce,
+  swapArrayElements,
+  getUserLocation,
+  getCities,
+  saveCities,
+} from "./helpers";
+
+import { notification } from "ant-design-vue";
 import { Loading3QuartersOutlined } from "@ant-design/icons-vue";
+import { isResponceError } from "../../shared/api/helpers";
 
 const [notificationApi, contextHolder] = notification.useNotification();
 
@@ -71,36 +81,35 @@ const deleteCity = (city: string) => {
   citiesList.value = citiesList.value.filter((item) => item !== city);
   cities.value.delete(city);
   isSettingsOpen.value = false;
-  saveCities();
+  saveCities(citiesList.value);
 };
 
 const addCity = (city: string, completeLoad: () => void) => {
-  fetchWeatherWrapper(city).then(() => {
+  fetchWeatherWrapper({ city }).then(() => {
     completeLoad();
   });
 };
 
 const swapCities = (idx1: number, idx2: number) => {
   swapArrayElements(citiesList.value, idx1, idx2);
-  saveCities();
+  saveCities(citiesList.value);
 };
 
-const isError = (
-  data: IWeatherResponceError | IWeatherResponce
-): data is IWeatherResponceError => {
-  return (data as IWeatherResponceError).message !== undefined;
-};
-
-const fetchWeatherWrapper = async (key: string) => {
-  return fetchWeather(key)
+const fetchWeatherWrapper = async (res: WeatherWrapperArgs) => {
+  return (
+    "city" in res
+      ? fetchWeather(res.city)
+      : fetchWeatherByLocation(res.location[0], res.location[1])
+  )
     .then((data) => {
-      if (isError(data)) {
+      if (isResponceError(data)) {
         throw new Error(data.message);
       }
-      cities.value.set(key, parseWeatherResponce(data));
-      citiesList.value.push(key);
+      const parsedData = parseWeatherResponce(data);
+      cities.value.set(parsedData.name, parsedData);
+      citiesList.value.push(parsedData.name);
       loading.value = false;
-      saveCities();
+      saveCities(citiesList.value);
     })
     .catch((e: Error) => {
       notificationApi.error({
@@ -110,61 +119,22 @@ const fetchWeatherWrapper = async (key: string) => {
     });
 };
 
-const getUserLocation = () =>
-  new Promise<void>((res, rej) => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          fetchWeatherByLocation(lat, lng)
-            .then((data) => {
-              if (isError(data)) {
-                throw new Error(data.message);
-              }
-              if (!cities.value.has(data.name)) {
-                citiesList.value.push(data.name);
-              }
-              cities.value.set(data.name, parseWeatherResponce(data));
-              loading.value = false;
-              saveCities();
-              res();
-            })
-            .catch((e: Error) => {
-              notificationApi.error({
-                message: "Weather fetching error",
-                description: e.message,
-              });
-              rej("Weather fetching error");
-            });
-        },
-        (error) => {
-          citiesList.value.push("London");
-          console.error("Error getting user location:", error);
-          rej("Error getting user location:" + error);
-        }
-      );
-    } else {
-      citiesList.value.push("London");
-      console.error("Geolocation is not supported by this browser.");
-    }
-  });
-
-const saveCities = () => {
-  localStorage.setItem("citiesList", JSON.stringify(citiesList.value));
-};
-
 onMounted(async () => {
-  const sitiesTmp = JSON.parse(localStorage.getItem("citiesList") || "[]");
+  const sitiesTmp = getCities();
 
   if (sitiesTmp.length === 0) {
-    await getUserLocation();
+    try {
+      const [lat, lng] = await getUserLocation();
+      fetchWeatherWrapper({ location: [lat, lng] });
+    } catch (e) {
+      citiesList.value.push("London");
+    }
   } else {
     for (const item of sitiesTmp) {
       cities.value.set(item, null);
     }
     for (const key of cities.value.keys()) {
-      fetchWeatherWrapper(key);
+      fetchWeatherWrapper({ city: key });
     }
   }
 });

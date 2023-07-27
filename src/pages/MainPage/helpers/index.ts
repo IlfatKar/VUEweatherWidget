@@ -20,3 +20,30 @@ export const swapArrayElements = (
 ) => {
   [arr[index1], arr[index2]] = [arr[index2], arr[index1]];
 };
+
+export const getUserLocation = () =>
+  new Promise<[number, number]>((res, rej) => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          res([lat, lng]);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+          rej("Error getting user location:" + error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  });
+
+export const saveCities = (cities: string[]) => {
+  localStorage.setItem("citiesList", JSON.stringify(cities));
+};
+
+export const getCities = (): string[] => {
+  return JSON.parse(localStorage.getItem("citiesList") || "[]");
+};
