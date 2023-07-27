@@ -28,6 +28,7 @@ const props = defineProps<{
   isDragged: boolean;
 }>();
 </script>
+
 <style lang="scss" scoped>
 .SettingsItem {
   background-color: #f1f1f1;

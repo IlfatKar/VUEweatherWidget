@@ -69,6 +69,7 @@ const props = defineProps<{
   openSettings?: () => void;
 }>();
 </script>
+
 <style lang="scss" scoped>
 .grid {
   padding: 14px;

@@ -1,42 +1,48 @@
 <template>
-  <loading3-quarters-outlined v-if="loading" :spin="true" class="loadingIcon" />
-  <a-typography-title :level="3" v-else-if="citiesList.length === 0">
-    Weather fetching error. <br />
-    Try again later.
-  </a-typography-title>
-  <a-layout class="mainLayout" v-else>
-    <a-space direction="vertical">
-      <div v-for="(item, index) in citiesList" :key="item[0]">
-        <WeatherBlock
-          :title="cities.get(item)"
-          v-if="cities.get(item)"
-          :open-settings="
-            index === 0
-              ? () => {
-                  isSettingsOpen = true;
-                }
-              : undefined
-          "
-          :info="cities.get(item)!"
-          :show-gear="index === 0"
-          :type="WeatherBlockTypes.big"
-        />
-      </div>
-    </a-space>
-    <WeatherSettings
-      :cities="citiesList"
-      :on-close="
-        () => {
-          isSettingsOpen = false;
-        }
-      "
-      :is-open="isSettingsOpen"
-      :on-delete-city="deleteCity"
-      :add-city="addCity"
-      :swap-cities="swapCities"
+  <div id="app">
+    <loading3-quarters-outlined
+      v-if="loading"
+      :spin="true"
+      class="loadingIcon"
     />
-  </a-layout>
-  <contextHolder />
+    <a-typography-title :level="3" v-else-if="citiesList.length === 0">
+      Weather fetching error. <br />
+      Try again later.
+    </a-typography-title>
+    <a-layout class="mainLayout" v-else>
+      <a-space direction="vertical">
+        <div v-for="(item, index) in citiesList" :key="item[0]">
+          <WeatherBlock
+            :title="cities.get(item)"
+            v-if="cities.get(item)"
+            :open-settings="
+              index === 0
+                ? () => {
+                    isSettingsOpen = true;
+                  }
+                : undefined
+            "
+            :info="cities.get(item)!"
+            :show-gear="index === 0"
+            :type="WeatherBlockTypes.big"
+          />
+        </div>
+      </a-space>
+      <WeatherSettings
+        :cities="citiesList"
+        :on-close="
+          () => {
+            isSettingsOpen = false;
+          }
+        "
+        :is-open="isSettingsOpen"
+        :on-delete-city="deleteCity"
+        :add-city="addCity"
+        :swap-cities="swapCities"
+      />
+    </a-layout>
+    <contextHolder />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -146,6 +152,7 @@ onMounted(async () => {
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   max-width: 320px;
+  min-width: 320px;
   position: relative;
   overflow: hidden;
   min-height: 600px;
@@ -154,6 +161,7 @@ onMounted(async () => {
 }
 .mainLayout {
   position: relative;
+  height: 600px;
   background-color: #fff;
 }
 .loadingIcon {

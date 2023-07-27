@@ -5,4 +5,4 @@ import "ant-design-vue/dist/reset.css";
 
 const app = createApp(App);
 app.use(Antd);
-app.mount("#app");
+app.mount("weather-widget");

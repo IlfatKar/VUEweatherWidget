@@ -42,6 +42,7 @@ const addCityWrapper = () => {
   isError.value = true;
 };
 </script>
+
 <style lang="scss" scoped>
 .AddLocation {
   position: absolute;
