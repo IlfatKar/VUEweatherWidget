@@ -9,5 +9,6 @@ module.exports = defineConfig({
     },
   },
   productionSourceMap: false,
+  filenameHashing: false,
   transpileDependencies: true,
 });

@@ -1,24 +1,22 @@
-# weatherwidget
+# [VUE] Weather Widget
 
-## Project setup
-```
-npm install
-```
+A widget that displays the weather in the specified cities.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## How to build
 
-### Compiles and minifies for production
 ```
-npm run build
+$ npm i
+$ npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
+## How to use
+
+```html
+<weather-widget />
+<script type="text/javascript" src="{URL to the app.js}"></script>
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Preview
+
+![MainPage](https://files.catbox.moe/07zx56.png)
+![SettingsPage](https://files.catbox.moe/uxsrbs.png)
